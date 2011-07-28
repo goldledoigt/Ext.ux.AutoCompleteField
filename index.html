@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="/libs/sencha-touch-1.1.0/resources/css/sencha-touch.css" />
+        <script type="text/javascript" charset="utf-8"  src="/libs/sencha-touch-1.1.0/sencha-touch-debug.js"></script>
+        <script type="text/javascript" charset="utf-8"  src="Ext.ux.AutoCompleteField.js"></script>
+        <script type="text/javascript" charset="utf-8"  src="data.js"></script>
+    </head>
+    <body>
+        <script>
+        
+        Ext.setup({
+        
+            onReady: function() {
+
+                var store = new Ext.data.Store({
+                    data: __DATA__,
+                    fields: [
+                        {name: 'cp', type: 'int'},
+                        {name: 'name', type: 'string'}
+                    ],
+                    sorters: [
+                        {property : 'name', direction: 'ASC'},
+                        {property : 'cp', direction: 'ASC'}
+                    ]
+                });
+
+                var form = new Ext.form.FormPanel({
+                    fullscreen: true,
+                    items: [{
+                        xtype: 'autocompletefield',
+                        // xtype: 'textfield',
+                        store: store,
+                        label: 'Location',
+                        filterField: 'name',
+                        listItemTpl: '<div>{name} <span>{cp}</span></div>'
+                    }]
+                });
+
+                // var panel = new Ext.Panel({
+                //     fullscreen: true,
+                //     layout: 'fit',
+                //     items: form,
+                //     dockedItems: [{
+                //         dock: 'top',
+                //         xtype: 'toolbar',
+                //         items: [{
+                //             text: 'pof'
+                //         }]
+                //     }]
+                // });
+
+                // panel.render(document.body);
+
+            }
+
+        });
+        </script>
+    </body>
+</html>
