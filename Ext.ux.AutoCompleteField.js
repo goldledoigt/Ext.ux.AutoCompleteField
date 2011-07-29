@@ -40,10 +40,10 @@ Ext.ux.AutoCompleteField = Ext.extend(Ext.form.Text, {
             list = panel.items.get(0),
             store = list.store;
         if (query.length) {
-            // var t = new Date();
+            var t = new Date();
             store.clearFilter(true);
             store.filter(this.filterField, query);
-            // document.location.hash = (new Date()) - t;
+            document.location.hash = (new Date()) - t;
             if (store.getCount())
                 panel.showBy(this.el);
             else panel.hide();
