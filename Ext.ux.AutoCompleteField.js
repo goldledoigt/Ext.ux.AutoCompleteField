@@ -4,6 +4,10 @@ Ext.ux.AutoCompleteField = Ext.extend(Ext.form.Text, {
 
     store: null,
 
+    maxChar: 2,
+
+    maxResults: 50,
+
     filterField: null,
 
     listItemTpl: null,
@@ -37,14 +41,22 @@ Ext.ux.AutoCompleteField = Ext.extend(Ext.form.Text, {
         var query = this.getValue(),
             panel = this.getFloatingPanel(),
             list = panel.items.get(0),
-            store = list.store;
-        if (query.length) {
+            store = list.store,
+            l = query.length;
+        if (l >= this.maxChar) {
             var t = new Date();
-            store.clearFilter(true);
-            store.filter(this.filterField, query);
+            var data = this.getData(query, this.maxResults);
+            store.loadData(data);
             document.location.hash = (new Date()) - t;
-            if (store.getCount())
+            console.log("LIST", list);
+            // var t = new Date();
+            // store.clearFilter(true);
+            // store.filter(this.filterField, query);
+            // document.location.hash = (new Date()) - t;
+            if (store.getCount()) {
                 panel.showBy(this.el);
+                list.scroller.scrollTo({x: 0, y: 0});
+            }
             else panel.hide();
         } else panel.hide();
     },
@@ -94,6 +106,22 @@ Ext.ux.AutoCompleteField = Ext.extend(Ext.form.Text, {
 
     stripTags: function(v) {
         return !v ? v : String(v).replace(/<\/?[^>]+>/gi, '');
+    },
+
+    getData: function(query, limit) {
+        var data = __DATA__,
+            l = data.length,
+            results = [],
+            v, reg;
+        for (var i = 0; i < l; i++) {
+            v = data[i];
+            if (v[this.filterField].toLowerCase().indexOf(query.toLowerCase()) === 0) {
+                results.push(v);
+            }
+            if (limit && results.length >= limit) break;
+        }
+        return results;
+
     }
 
 });
