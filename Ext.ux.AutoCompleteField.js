@@ -8,6 +8,8 @@ Ext.ux.AutoCompleteField = Ext.extend(Ext.form.Text, {
 
     listItemTpl: null,
 
+    monitorOrientation: true,
+
     initComponent: function() {
         this.store = Ext.StoreMgr.lookup(this.store);
         if (!this.store || !this.listItemTpl || !this.filterField) {
@@ -15,19 +17,16 @@ Ext.ux.AutoCompleteField = Ext.extend(Ext.form.Text, {
         } else {
             this.fieldValueTpl = new Ext.XTemplate(this.fieldValueTpl || this.listItemTpl, {compiled:true});
             Ext.ux.AutoCompleteField.superclass.initComponent.apply(this, arguments);
-            // this.on('resize', this.onFieldResize, this);
-            // this.on('orientationchange', this.onOrientationChange, this);
+            this.on('orientationchange', this.handleOrientationChange, this);
             this.on('keyup', this.onFieldKeyUp, this);
         }
     },
 
-    // onOrientationChange: function() {
-    //     console.log("onOrientationChange", this, arguments);
-    // },
-
-    // onFieldResize: function() {
-    //     console.log("onFieldResize", this, arguments);
-    // },
+    handleOrientationChange: function() {
+        var panel = this.getFloatingPanel();
+        if (this.orientationTimeout) clearTimeout(this.orientationTimeout);
+        this.orientationTimeout = Ext.defer(this.resizeFloatingPanel, 50, this, [panel]);
+    },
 
     onFieldKeyUp: function(field, event) {
         if (this.keyUpTimeout) clearTimeout(this.keyUpTimeout);
