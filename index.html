@@ -29,28 +29,13 @@
                     fullscreen: true,
                     items: [{
                         xtype: 'autocompletefield',
-                        // xtype: 'textfield',
                         store: store,
+                        data: __DATA__,
                         label: 'Location',
                         filterField: 'name',
                         listItemTpl: '<div>{name} <span>{cp}</span></div>'
                     }]
                 });
-
-                // var panel = new Ext.Panel({
-                //     fullscreen: true,
-                //     layout: 'fit',
-                //     items: form,
-                //     dockedItems: [{
-                //         dock: 'top',
-                //         xtype: 'toolbar',
-                //         items: [{
-                //             text: 'pof'
-                //         }]
-                //     }]
-                // });
-
-                // panel.render(document.body);
 
             }
 

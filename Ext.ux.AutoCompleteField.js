@@ -2,6 +2,8 @@ Ext.ns('Ext.ux');
 
 Ext.ux.AutoCompleteField = Ext.extend(Ext.form.Text, {
 
+    data: null,
+
     store: null,
 
     maxChar: 2,
@@ -17,7 +19,7 @@ Ext.ux.AutoCompleteField = Ext.extend(Ext.form.Text, {
     initComponent: function() {
         this.store = Ext.StoreMgr.lookup(this.store);
         if (!this.store || !this.listItemTpl || !this.filterField) {
-            throw 'Ext.ux.AutoCompleteField requires store, filterField and listItemTpl configurations to be defined.';
+            throw 'Ext.ux.AutoCompleteField requires data, store, filterField and listItemTpl configurations to be defined.';
         } else {
             this.fieldValueTpl = new Ext.XTemplate(this.fieldValueTpl || this.listItemTpl, {compiled:true});
             Ext.ux.AutoCompleteField.superclass.initComponent.apply(this, arguments);
@@ -29,7 +31,10 @@ Ext.ux.AutoCompleteField = Ext.extend(Ext.form.Text, {
     handleOrientationChange: function() {
         var panel = this.getFloatingPanel();
         if (this.orientationTimeout) clearTimeout(this.orientationTimeout);
-        this.orientationTimeout = Ext.defer(this.resizeFloatingPanel, 50, this, [panel]);
+        this.orientationTimeout = Ext.defer(function() {
+            this.resizeFloatingPanel();
+            this.getFloatingPanel().showBy(this.el);
+        }, 50, this);
     },
 
     onFieldKeyUp: function(field, event) {
@@ -48,11 +53,6 @@ Ext.ux.AutoCompleteField = Ext.extend(Ext.form.Text, {
             var data = this.getData(query, this.maxResults);
             store.loadData(data);
             document.location.hash = (new Date()) - t;
-            console.log("LIST", list);
-            // var t = new Date();
-            // store.clearFilter(true);
-            // store.filter(this.filterField, query);
-            // document.location.hash = (new Date()) - t;
             if (store.getCount()) {
                 panel.showBy(this.el);
                 list.scroller.scrollTo({x: 0, y: 0});
@@ -87,10 +87,11 @@ Ext.ux.AutoCompleteField = Ext.extend(Ext.form.Text, {
     },
 
     floatingPanelShow: function(panel) {
-        this.resizeFloatingPanel(panel);
+        this.resizeFloatingPanel();
     },
 
-    resizeFloatingPanel: function(panel) {
+    resizeFloatingPanel: function() {
+        var panel = this.getFloatingPanel();
         panel.setWidth(this.getWidth());
     },
 
@@ -109,7 +110,7 @@ Ext.ux.AutoCompleteField = Ext.extend(Ext.form.Text, {
     },
 
     getData: function(query, limit) {
-        var data = __DATA__,
+        var data = this.data,
             l = data.length,
             results = [],
             v, reg;
