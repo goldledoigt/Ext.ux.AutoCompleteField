@@ -49,10 +49,8 @@ Ext.ux.AutoCompleteField = Ext.extend(Ext.form.Text, {
             store = list.store,
             l = query.length;
         if (l >= this.maxChar) {
-            var t = new Date();
             var data = this.getData(query, this.maxResults);
             store.loadData(data);
-            document.location.hash = (new Date()) - t;
             if (store.getCount()) {
                 panel.showBy(this.el);
                 list.scroller.scrollTo({x: 0, y: 0});
