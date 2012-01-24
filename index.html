@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <link rel="stylesheet" type="text/css" href="/libs/sencha-touch-1.1.0/resources/css/sencha-touch.css" />
-        <script type="text/javascript" charset="utf-8"  src="/libs/sencha-touch-1.1.0/sencha-touch-debug.js"></script>
+        <link rel="stylesheet" type="text/css" href="http://dev.sencha.com/deploy/touch/resources/css/sencha-touch.css" />
+        <link rel="stylesheet" type="text/css" href="Ext.ux.AutoCompleteField.css" />
+        <script type="text/javascript" charset="utf-8"  src="http://dev.sencha.com/deploy/touch/sencha-touch.js"></script>
         <script type="text/javascript" charset="utf-8"  src="Ext.ux.AutoCompleteField.js"></script>
         <script type="text/javascript" charset="utf-8"  src="data.js"></script>
     </head>
@@ -28,7 +29,7 @@
                 var form = new Ext.form.FormPanel({
                     fullscreen: true,
                     items: [{
-                        xtype: 'autocompletefield',
+                        xtype: 'ux_autocompletefield',
                         store: store,
                         data: __DATA__,
                         label: 'Location',
