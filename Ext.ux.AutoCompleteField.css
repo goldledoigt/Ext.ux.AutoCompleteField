@@ -1,0 +1,55 @@
+.ux_autocompletefield .x-form-field-container {
+    display: -webkit-box;
+    -webkit-box-pack: start;
+    -webkit-box-align: stretch;
+}
+
+.ux_autocompletefield .x-input-text-selection {
+    padding-left: 3px;
+    display: -webkit-box;
+    -webkit-box-align: center;
+    background-color: #FFF;
+}
+
+.ux_autocompletefield .x-input-text-selection .x-component div {
+    color: #666;
+    padding: 5px;
+    margin: 0 2px;
+    border-radius: 5px;
+    background-color: #DDF4FB;
+    border: 1px solid #B5CEE8;
+    text-shadow: 0 1px 0 #FFF;
+}
+
+.ux_autocompletefield .x-input-text-selection .x-component.selected div {
+    color: #D9A5A4;
+    background-color: #FDDFDE;
+    border: 1px solid #EAB6B5;
+}
+
+.ux_autocompletefield .x-input-text-selection .x-component > div > span {
+    top: -9px;
+    left: 4px;
+    color: #B5CEE8;
+    cursor: pointer;
+    padding: 0 3px;
+    font-size: 15px;
+    font-weight: bold;
+    position: relative;
+    display: inline-block;
+}
+
+.ux_autocompletefield .x-input-text-selection .x-component.selected > div > span {
+    color: #EAB6B5;
+}
+
+.ux_autocompletefield .x-form-label span {
+    display: block;
+}
+
+.ux_autocompletefield .x-form-label span > span {
+    color: #666;
+    float: right;
+    display: inline;
+    margin-top: 0.4em;
+}
