@@ -1,4 +1,4 @@
-__DATA__ = [
+var __DATA__ = [
     {
         "cp": "64460", 
         "name": "Aast"

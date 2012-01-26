@@ -2,6 +2,8 @@
 <html>
     <head>
         <link rel="stylesheet" type="text/css" href="http://dev.sencha.com/deploy/touch/resources/css/sencha-touch.css" />
+        <link rel="stylesheet" type="text/css" href="Ext.ux.AutoCompleteField.css" />
+
         <script type="text/javascript" charset="utf-8"  src="http://dev.sencha.com/deploy/touch/sencha-touch.js"></script>
         <script type="text/javascript" charset="utf-8"  src="Ext.ux.AutoCompleteField.js"></script>
         <script type="text/javascript" charset="utf-8"  src="data.js"></script>
@@ -13,7 +15,19 @@
         
             onReady: function() {
 
-                var store = new Ext.data.Store({
+                // var store = new Ext.data.Store({
+                //     data: __DATA__.slice(),
+                //     fields: [
+                //         {name: 'cp', type: 'int'},
+                //         {name: 'name', type: 'string'}
+                //     ],
+                //     sorters: [
+                //         {property : 'name', direction: 'ASC'},
+                //         {property : 'cp', direction: 'ASC'}
+                //     ]
+                // });
+
+                var store2 = new Ext.data.Store({
                     data: __DATA__,
                     fields: [
                         {name: 'cp', type: 'int'},
@@ -28,11 +42,18 @@
                 var form = new Ext.form.FormPanel({
                     fullscreen: true,
                     items: [{
-                        xtype: 'autocompletefield',
-                        store: store,
-                        data: __DATA__,
-                        label: 'Location',
+                        xtype: 'ux_autocompletefield',
+                        store: store2,
+                        label: 'Simple select',
                         filterField: 'name',
+                        enableMultiSelect: false,
+                        listItemTpl: '<div>{name} <span>{cp}</span></div>'
+                    }, {
+                        xtype: 'ux_autocompletefield',
+                        store: store2,
+                        label: 'Multi select',
+                        filterField: 'name',
+                        enableMultiSelect: true,
                         listItemTpl: '<div>{name} <span>{cp}</span></div>'
                     }]
                 });
