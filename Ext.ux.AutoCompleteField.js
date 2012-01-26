@@ -8,7 +8,7 @@ Ext.ux.AutoCompleteField = Ext.extend(Ext.form.Text, {
 
     store: null,
 
-    minChar: 2,
+    minChar: 3,
 
     maxResults: 50,
 
@@ -19,6 +19,8 @@ Ext.ux.AutoCompleteField = Ext.extend(Ext.form.Text, {
     enableMultiSelect: false,
 
     monitorOrientation: true,
+
+    emptyText: 'No result...',
 
     cls: 'ux_autocompletefield',
 
@@ -39,14 +41,14 @@ Ext.ux.AutoCompleteField = Ext.extend(Ext.form.Text, {
                         '<div class="x-form-label"><span>{label}</span></div>',
                     '</tpl>',
                     '<tpl if="fieldEl">',
-                        '<div class="x-form-field-container"><div class="{fieldCls}-selection"></div><input id="{inputId}" type="{inputType}" name="{name}" class="{fieldCls}"',
+                        '<div class="x-form-field-container">'+(!Ext.is.iPhone ? '<div class="{fieldCls}-selection"></div>' : '')+'<input id="{inputId}" type="{inputType}" name="{name}" class="{fieldCls}"',
                             '<tpl if="tabIndex">tabIndex="{tabIndex}" </tpl>',
                             '<tpl if="placeHolder">placeholder="{placeHolder}" </tpl>',
                             '<tpl if="style">style="{style}" </tpl>',
                             '<tpl if="maxlength">maxlength="{maxlength}" </tpl>',
                             '<tpl if="autoComplete">autocomplete="{autoComplete}" </tpl>',
                             '<tpl if="autoCapitalize">autocapitalize="{autoCapitalize}" </tpl>',
-                            '<tpl if="autoCorrect">autocorrect="{autoCorrect}" </tpl> />',
+                            '<tpl if="autoCorrect">autocorrect="{autoCorrect}" </tpl> />'+(Ext.is.iPhone ? '<div class="{fieldCls}-selection"></div>' : ''),
                         '<tpl if="useMask"><div class="x-field-mask"></div></tpl>',
                         '</div>',
                         '<tpl if="useClearIcon"><div class="x-field-clear-container"><div class="x-field-clear x-hidden-visibility">&#215;</div></div></tpl>',
@@ -84,9 +86,26 @@ Ext.ux.AutoCompleteField = Ext.extend(Ext.form.Text, {
     onFieldKeyUp: function(field, event) {
         if (this.keyUpTimeout) clearTimeout(this.keyUpTimeout);
         this.keyUpTimeout = Ext.defer(this.updateList, 1000, this);
-        if (event.browserEvent.keyCode === 8) {
-            this.selectLastBubble();
+        this.checkBubbleToRemove(event.browserEvent.keyCode);
+    },
+
+    checkBubbleToRemove: function(keyCode) {
+        if (this.enableMultiSelect && keyCode === 8 && this.valueLength === 0) {
+            if (this.lastBubbleSelected) {
+                this.removeBubble(Ext.getCmp(this.lastBubbleSelected.id));
+                this.lastBubbleSelected = false;
+            } else {
+                var lastBubble = this.bubblesEl.last();
+                if (lastBubble) {
+                    this.lastBubbleSelected = lastBubble;
+                    this.selectBubble(lastBubble);
+                }
+            }
+        } else if (this.lastBubbleSelected && keyCode !== 8) {
+            this.unselectBubble(this.lastBubbleSelected);
+            this.lastBubbleSelected = false;
         }
+        this.valueLength = this.getRawValue().length;
     },
 
     updateList: function() {
@@ -97,17 +116,17 @@ Ext.ux.AutoCompleteField = Ext.extend(Ext.form.Text, {
             l = query.length;
 
         if (l >= this.minChar) {
-            var t = new Date();
+            store.removeAll();
             var records = this.getRecords(query, this.maxResults);
             store.loadRecords(records);
-            document.location.hash = (new Date()) - t;
-            if (store.getCount()) {
-                panel.showBy(this.el);
-                list.scroller.scrollTo({x: 0, y: 0});
-            } else panel.hide();
+            if (list.el) list.el.unmask();
+            panel.showBy(this.el);
+            list.scroller.scrollTo({x: 0, y: 0});
+            if (!store.getCount()) {
+                list.el.mask(this.emptyText);
+            }
         } else {
             panel.hide();
-            console.log('updateList', this, arguments);
         }
     },
 
@@ -118,6 +137,7 @@ Ext.ux.AutoCompleteField = Ext.extend(Ext.form.Text, {
                 layout: 'fit',
                 width: 290,
                 height: 200,
+                // height: Ext.is.iPhone ? 50 : 200,
                 cls: 'ux_autocompletefield_list',
                 items: [{
                     xtype: 'list',
@@ -145,6 +165,7 @@ Ext.ux.AutoCompleteField = Ext.extend(Ext.form.Text, {
     floatingPanelHide: function() {
         if (this.enableMultiSelect) {
             this.setValue('');
+            this.valueLength = 0;
         }
     },
 
@@ -183,7 +204,6 @@ Ext.ux.AutoCompleteField = Ext.extend(Ext.form.Text, {
         if (items.getCount() === 2) {
             Ext.getCmp(items.first().id).destroy();
         }
-
         this.addValue(value);
         this.createBubble(value);
     },
@@ -206,7 +226,7 @@ Ext.ux.AutoCompleteField = Ext.extend(Ext.form.Text, {
 
     removeBubble: function(bubble) {
         var value = bubble.value;
-        bubble.el.addCls('selected');
+        this.selectBubble(bubble.el);
         Ext.Anim.run(bubble.el, 'fade', {
             out: true,
             scope: this,
@@ -226,6 +246,7 @@ Ext.ux.AutoCompleteField = Ext.extend(Ext.form.Text, {
             if (this.enableMultiSelect) {
                 this.addBubble(this.stripTags(value));
                 this.setValue('');
+                this.valueLength = 0;
             } else {
                 this.setValue(this.stripTags(value));
             }
@@ -259,10 +280,13 @@ Ext.ux.AutoCompleteField = Ext.extend(Ext.form.Text, {
         return this.store.getRange(0, limit-1);
     },
 
-    selectLastBubble: function() {
-        console.log('selectLastBubble', this, arguments);
-        this.bubblesEl.last().addCls('selected');
+    selectBubble: function(bubbleEl) {
+        bubbleEl.addCls('selected');
     },
+
+    unselectBubble: function(bubbleEl) {
+        bubbleEl.removeCls('selected');
+    }
 
 });
 
