@@ -10,7 +10,7 @@
 }
 
 .ux_autocompletefield .x-input-text-selection {
-    padding: .4em;
+    padding: .3em;
     display: -webkit-box;
     -webkit-box-align: center;
     background-color: #FFF;
@@ -26,7 +26,7 @@
 
 .ux_autocompletefield .x-input-text-selection .x-component div {
     color: #666;
-    padding: 5px;
+    padding: 4px;
     border-radius: 5px;
     background-color: #DDF4FB;
     border: 1px solid #B5CEE8;

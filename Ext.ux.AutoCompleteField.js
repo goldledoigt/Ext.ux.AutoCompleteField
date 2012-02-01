@@ -117,7 +117,7 @@ Ext.ux.AutoCompleteField = Ext.extend(Ext.form.Text, {
 
         if (l >= this.minChar) {
             store.removeAll();
-            var records = this.getRecords(query, this.maxResults);
+            var records = this.getFilteredRecords(query, this.maxResults);
             store.loadRecords(records);
             if (list.el) list.el.unmask();
             panel.showBy(this.el);
@@ -183,28 +183,36 @@ Ext.ux.AutoCompleteField = Ext.extend(Ext.form.Text, {
         }
     },
 
-    addValue: function(value) {
-        this.values.push(value);
+    addValue: function(record) {
+        this.values.push(record);
         this.updateLabel();
     },
 
     removeValue: function(value) {
-        var index = this.values.indexOf(value);
+        // var index = this.values.indexOf(value);
+        var index, i, l;
+        for (i = 0, l = this.values.length; i < l; i++) {
+            if (this.values[i].get(this.filterField) === value) {
+                index = i;
+                break;
+            }
+        }
         if (index !== -1) this.values.splice(index, 1);
         if (this.values.length > 1) {
-            this.createBubble(this.values[this.values.length - 2], 0, true);
+            value = this.values[this.values.length - 2].get(this.filterField);
+            this.createBubble(value, 0, true);
         }
         this.updateLabel();
     },
 
-    addBubble: function(value) {
+    addBubble: function(value, record) {
         var bubble, handler,
             items = this.bubblesEl.select('.x-component');
 
         if (items.getCount() === 2) {
             Ext.getCmp(items.first().id).destroy();
         }
-        this.addValue(value);
+        this.addValue(record);
         this.createBubble(value);
     },
 
@@ -244,7 +252,7 @@ Ext.ux.AutoCompleteField = Ext.extend(Ext.form.Text, {
         if (record) {
             var value = this.fieldValueTpl.apply(record.data);
             if (this.enableMultiSelect) {
-                this.addBubble(this.stripTags(value));
+                this.addBubble(this.stripTags(value), record);
                 this.setValue('');
                 this.valueLength = 0;
             } else {
@@ -274,7 +282,7 @@ Ext.ux.AutoCompleteField = Ext.extend(Ext.form.Text, {
         }
     },
 
-    getRecords: function(query, limit) {
+    getFilteredRecords: function(query, limit) {
         this.store.clearFilter();
         this.store.filter(this.filterField, query);
         return this.store.getRange(0, limit-1);
