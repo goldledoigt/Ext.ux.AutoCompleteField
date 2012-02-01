@@ -15,19 +15,7 @@
         
             onReady: function() {
 
-                // var store = new Ext.data.Store({
-                //     data: __DATA__.slice(),
-                //     fields: [
-                //         {name: 'cp', type: 'int'},
-                //         {name: 'name', type: 'string'}
-                //     ],
-                //     sorters: [
-                //         {property : 'name', direction: 'ASC'},
-                //         {property : 'cp', direction: 'ASC'}
-                //     ]
-                // });
-
-                var store2 = new Ext.data.Store({
+                var store = new Ext.data.Store({
                     data: __DATA__,
                     fields: [
                         {name: 'cp', type: 'int'},
@@ -43,18 +31,29 @@
                     fullscreen: true,
                     items: [{
                         xtype: 'ux_autocompletefield',
-                        store: store2,
+                        store: store,
                         label: 'Simple select',
                         filterField: 'name',
                         enableMultiSelect: false,
                         listItemTpl: '<div>{name} <span>{cp}</span></div>'
                     }, {
                         xtype: 'ux_autocompletefield',
-                        store: store2,
+                        store: store,
                         label: 'Multi select',
                         filterField: 'name',
                         enableMultiSelect: true,
                         listItemTpl: '<div>{name} <span>{cp}</span></div>'
+                    }, {
+                        xtype: 'container',
+                        margin: '10 0',
+                        layout: 'hbox',
+                        items: [{
+                            xtype: 'button',
+                            text: 'log values',
+                            handler: function() {
+                                console.log('FORM', form.getValues());
+                            }
+                        }]
                     }]
                 });
 
