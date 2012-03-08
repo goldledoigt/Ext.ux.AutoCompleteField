@@ -8,7 +8,7 @@ Ext.ux.AutoCompleteField = Ext.extend(Ext.form.Text, {
 
     store: null,
 
-    minChar: 3,
+    minChar: 2,
 
     maxResults: 50,
 
@@ -85,7 +85,7 @@ Ext.ux.AutoCompleteField = Ext.extend(Ext.form.Text, {
 
     onFieldKeyUp: function(field, event) {
         if (this.keyUpTimeout) clearTimeout(this.keyUpTimeout);
-        this.keyUpTimeout = Ext.defer(this.updateList, 1000, this);
+        this.keyUpTimeout = Ext.defer(this.updateList, 500, this);
         this.checkBubbleToRemove(event.browserEvent.keyCode);
     },
 
@@ -109,22 +109,36 @@ Ext.ux.AutoCompleteField = Ext.extend(Ext.form.Text, {
     },
 
     updateList: function() {
-        var query = this.getRawValue(),
+        var self = this,
+            query = this.getRawValue(),
             panel = this.getFloatingPanel(),
             list = panel.items.get(0),
             store = list.store,
             l = query.length;
 
         if (l >= this.minChar) {
-            store.removeAll();
-            var records = this.getFilteredRecords(query, this.maxResults);
-            store.loadRecords(records);
-            if (list.el) list.el.unmask();
+            var dt = new Date();
             panel.showBy(this.el);
-            list.scroller.scrollTo({x: 0, y: 0});
-            if (!store.getCount()) {
-                list.el.mask(this.emptyText);
-            }
+            console.log('--> timer 1:', new Date() - dt);
+            list.el.mask('Loading...');
+            console.log('--> timer 2:', new Date() - dt);
+
+            setTimeout(function() {
+                console.log('--> timer 3:', new Date() - dt);
+                store.removeAll();
+                console.log('--> timer 4:', new Date() - dt);
+                var records = self.getFilteredRecords(query, self.maxResults);
+                console.log('--> timer 5:', new Date() - dt);
+                store.loadRecords(records);
+                console.log('--> timer 6:', new Date() - dt);
+                if (list.el) list.el.unmask();
+                // panel.showBy(this.el);
+                list.scroller.scrollTo({x: 0, y: 0});
+                if (!store.getCount()) {
+                    list.el.mask(self.emptyText);
+                }
+            }, 500);
+
         } else {
             panel.hide();
         }
@@ -135,7 +149,7 @@ Ext.ux.AutoCompleteField = Ext.extend(Ext.form.Text, {
             this.floatingPanel = new Ext.Panel({
                 floating: true,
                 layout: 'fit',
-                width: 290,
+                // width: 290,
                 height: 200,
                 // height: Ext.is.iPhone ? 50 : 200,
                 cls: 'ux_autocompletefield_list',
